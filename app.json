@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "fixcan",
+    "name": "FixCan",
     "slug": "fixcan",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -8,11 +8,14 @@
     "scheme": "fixcan",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "FixCan needs access to your photos so you can analyze a component you already photographed."
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#080A0B",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -25,12 +28,28 @@
     },
     "plugins": [
       "expo-router",
+      "expo-localization",
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#080A0B",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "imageWidth": 110
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow FixCan to scan hardware components and detect visible damage.",
+          "recordAudioAndroid": false,
+          "barcodeScannerEnabled": false
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow FixCan to analyze a component photo from your library.",
+          "microphonePermission": false
         }
       ]
     ],

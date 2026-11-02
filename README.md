@@ -1,56 +1,136 @@
-# Welcome to your Expo app 👋
+# FixCan
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Point your camera at a hardware component. FixCan identifies it, checks for visible damage, and walks you through the repair. Built for the Meta Hackathon.
 
-## Get started
+## Stack
 
-1. Install dependencies
+- Expo SDK 58 + React Native 0.88 + TypeScript (strict)
+- Expo Router (file-based navigation, typed routes)
+- Zustand + AsyncStorage (local-first persistence)
+- expo-camera / expo-image-picker / expo-file-system
+- i18next (English default, Spanish switchable)
+- Llama multimodal integration behind a mock/live boundary
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Run it
 
 ```bash
-npm run reset-project
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+Then scan the QR code with Expo Go, or press `a` / `i` / `w` for Android, iOS, or web.
 
-### Other setup steps
+### Open it on your phone (Windows)
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+Double-click **`FixCan-Mobile-QR.bat`**. It checks Node.js, installs dependencies the first time, starts the Expo dev server, and shows the QR code in the terminal. Scan that QR with Expo Go and FixCan opens on your phone.
 
-## Learn more
+The script asks for a connection mode:
 
-To learn more about developing your project with Expo, look at the following resources:
+1. **LAN** — phone and PC on the same Wi-Fi (fastest, recommended for the demo).
+2. **Tunnel** — different networks; the first run asks to install `@expo/ngrok`.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+On macOS/Linux the same thing is just `npx expo start` (add `--tunnel` when the phone is on another network).
 
-## Join the community
+Useful checks:
 
-Join our community of developers creating universal apps.
+```bash
+npm run typecheck
+npm run lint
+npm run doctor
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Demo flow
+
+1. Welcome screen — tap **Continue with email** (or Facebook / guest). Auth is mocked in this build.
+2. **History** opens with five seeded demo scans, grouped by date and filterable.
+3. Tap any scan to open the detail screen: photo/artwork, brand, model, specs, description, damage findings, and a step-by-step repair plan.
+4. Tap **Ask Assistant** to jump to the Assistant tab with that scan in context. Ask about tools, safety, cost, or whether it is worth repairing.
+5. Tap the avatar (top right) to open **Profile**: language (EN/ES), appearance, local data, and sign out.
+
+The camera tab is a full-screen capture experience: shutter, flash, flip, gallery import, framing overlay, and an analysis progress overlay. On web, the camera falls back to gallery import when no camera is available.
+
+## AI modes
+
+Mock mode is the default so the demo always works offline:
+
+```bash
+EXPO_PUBLIC_AI_MODE=mock
+```
+
+Live mode sends the captured image to a proxy you control:
+
+```bash
+EXPO_PUBLIC_AI_MODE=live
+EXPO_PUBLIC_AI_PROXY_URL=https://your-proxy.example.com/analyze
+```
+
+The proxy receives `{ imageBase64, mimeType, locale }` and must return:
+
+```json
+{
+  "analysis": {
+    "component": {
+      "name": "GeForce RTX 4070 Ti",
+      "brand": "ASUS",
+      "model": "TUF Gaming OC 12GB",
+      "category": "gpu",
+      "specs": [{ "label": "Memory", "value": "12 GB GDDR6X" }],
+      "description": "…",
+      "confidence": 0.94,
+      "identifiers": { "partNumber": "…" }
+    },
+    "damage": {
+      "detected": true,
+      "summary": "…",
+      "severity": "moderate",
+      "findings": [
+        {
+          "type": "dust",
+          "description": "…",
+          "location": "…",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "repair": {
+      "repairability": "partial",
+      "difficulty": "moderate",
+      "estimatedTime": "45–60 min",
+      "estimatedCost": { "min": 0, "max": 35, "currency": "USD" },
+      "tools": ["…"],
+      "steps": [{ "title": "…", "detail": "…", "safety": "…" }],
+      "warnings": ["…"],
+      "whenToSeekPro": ["…"]
+    }
+  },
+  "model": "llama-4-maverick"
+}
+```
+
+Responses are validated with Zod (`src/ai/schema.ts`). If the live call fails, the app falls back to demo data so the flow never breaks.
+
+## Project layout
+
+```
+src/
+  app/            # Expo Router routes
+    (tabs)/       # History, Scan (camera), Assistant
+    scan/[id].tsx # Scan detail
+    profile.tsx   # Modal profile/settings
+    welcome.tsx   # Mock sign-in
+  ai/             # Mock/live analysis boundary + Zod contract
+  components/     # UI primitives and scan artwork
+  data/           # Bilingual demo scans
+  i18n/           # EN/ES translations
+  lib/            # Images, dates, formatting, assistant replies
+  store/          # Zustand stores (settings, scans, chat)
+  theme/          # Colors, spacing, typography, light/dark mode
+  types/          # Shared domain types
+```
+
+## Notes
+
+- Language is English by default and persists. Switching to Spanish also re-localizes seeded demo scans.
+- Demo scans are seeded once; deleting all scans leaves History empty on purpose.
+- Photos are copied into the app document directory on native. Demo mode never uploads images.
+- Data stays on the device via AsyncStorage; no backend is required for the hackathon build.
