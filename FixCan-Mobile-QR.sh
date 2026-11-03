@@ -12,6 +12,8 @@ if [ ! -f "package.json" ]; then
   exit 1
 fi
 
+PORT="${FIXCAN_PORT:-8081}"
+
 cat <<'EOF'
 
  ============================================================
@@ -22,13 +24,13 @@ cat <<'EOF'
     - Node.js 20 o superior en este equipo.
     - Expo Go instalado en el celular (App Store / Play Store).
 
-  Al continuar se levanta el servidor de Expo y aparece un
-  CODIGO QR en esta terminal. Escanealo con la camara del
-  celular (Android) o con la app Camara (iPhone) para abrir
-  FixCan en Expo Go.
+  Al continuar se levanta el servidor de Expo y se abre una
+  IMAGEN con un QR grande en la pantalla. Escanealo desde
+  Expo Go (Projects -> Scan QR code) o escribe la URL a mano
+  en Projects -> Enter URL manually.
 
-  El celular y este equipo deben estar en la MISMA red Wi-Fi.
-  Si no puedes conectarte, elige la opcion 2 (Tunnel).
+  Modo 1 (LAN): celular y PC en la MISMA red Wi-Fi.
+  Modo 2 (Tunnel): funciona en redes distintas, usa ngrok.
 
 EOF
 
@@ -42,25 +44,27 @@ if [ ! -d "node_modules" ]; then
   npm install || { echo "  [ERROR] Fallo npm install."; exit 1; }
 fi
 
-printf '  Modo de conexion:\n    1) LAN     - mismo Wi-Fi (rapido, recomendado)\n    2) Tunnel  - redes distintas (mas lento, usa ngrok)\n\n  Opcion [1/2]: '
+printf '  Modo de conexion:\n    1) LAN     - mismo Wi-Fi (rapido, recomendado)\n    2) Tunnel  - redes distintas (ngrok anonimo, sin cuenta)\n\n  Opcion [1/2]: '
 read -r option
 echo
 
-case "$option" in
-  2)
-    echo "  Iniciando Expo en modo Tunnel..."
-    echo "  Usa ngrok anonimo: no necesita cuenta de Expo."
-    echo "  Escanea el QR que aparece abajo con Expo Go."
-    echo
-    npx expo start --tunnel ngrok
-    ;;
-  *)
-    echo "  Iniciando Expo en modo LAN..."
-    echo "  Escanea el QR que aparece abajo con Expo Go."
-    echo
-    npx expo start --lan
-    ;;
-esac
+MODE="lan"
+EXPO_ARGS=(--lan)
+
+if [ "$option" = "2" ]; then
+  MODE="tunnel"
+  EXPO_ARGS=(--tunnel ngrok)
+fi
+
+echo "  Iniciando Expo (puerto ${PORT})..."
+echo "  El QR grande se abrira automaticamente cuando el servidor responda."
+echo
+
+node scripts/mobile-qr.mjs "$MODE" "$PORT" FixCan-QR.png &
+QR_PID=$!
+trap 'kill "$QR_PID" 2>/dev/null' EXIT INT TERM
+
+npx expo start "${EXPO_ARGS[@]}" --port "$PORT"
 
 echo
 echo "  El servidor se detuvo."

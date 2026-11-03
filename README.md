@@ -22,9 +22,9 @@ Then scan the QR code with Expo Go, or press `a` / `i` / `w` for Android, iOS, o
 
 ### Open it on your phone (Windows)
 
-Double-click **`FixCan-Mobile-QR.bat`**. It checks Node.js, installs dependencies the first time, starts the Expo dev server, and shows the QR code in the terminal. Scan that QR with Expo Go and FixCan opens on your phone.
+Double-click **`FixCan-Mobile-QR.bat`**. It checks Node.js, installs dependencies the first time, asks for a connection mode, starts the Expo dev server, and opens a large **PNG QR code** on screen (the terminal QR is still printed as a fallback). Scan it from **Expo Go → Projects → Scan QR code**, not from the phone camera, or type the printed `exp://…` URL in **Enter URL manually**.
 
-The script asks for a connection mode:
+Connection modes:
 
 1. **LAN** — phone and PC on the same Wi-Fi (fastest, recommended for the demo).
 2. **Tunnel** — different networks; uses anonymous ngrok, no Expo account needed.
@@ -35,7 +35,11 @@ On macOS/Linux the same thing is the **`FixCan-Mobile-QR.sh`** script:
 ./FixCan-Mobile-QR.sh
 ```
 
-Or just run `npx expo start` (add `--tunnel` when the phone is on another network).
+Or run `npx expo start` and generate the PNG QR yourself with:
+
+```bash
+node scripts/mobile-qr.mjs tunnel 8081 FixCan-QR.png
+```
 
 Useful checks:
 
