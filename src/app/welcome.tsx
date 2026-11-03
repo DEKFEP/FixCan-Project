@@ -1,6 +1,6 @@
 import { Feather, FontAwesome } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +21,8 @@ export default function WelcomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const signIn = useSettingsStore((state) => state.signIn);
+  const signedIn = useSettingsStore((state) => state.signedIn);
+  const hasHydrated = useSettingsStore((state) => state.hasHydrated);
 
   const enterApp = () => {
     signIn({
@@ -29,6 +31,12 @@ export default function WelcomeScreen() {
     });
     router.replace('/(tabs)/history');
   };
+
+  // If the session is restored while this screen is visible (for example when
+  // local storage finishes loading after the boot timeout), continue to the app.
+  if (hasHydrated && signedIn) {
+    return <Redirect href="/(tabs)/history" />;
+  }
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
