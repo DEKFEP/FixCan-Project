@@ -2,6 +2,24 @@
 
 Point your camera at a hardware component. FixCan identifies it, checks for visible damage, and walks you through the repair. Built for the Meta Hackathon.
 
+## Open it on your phone
+
+Scan this QR code from **Expo Go → Projects → Scan QR code** (or paste the `exp://` URL in **Expo Go → Enter URL manually**):
+
+<a href="https://raw.githubusercontent.com/DEKFEP/FixCan-Project/master/docs/fixcan-mobile-qr.png">
+  <img src="docs/fixcan-mobile-qr.png" alt="QR code to open FixCan in Expo Go" width="280" />
+</a>
+
+**URL:** `exp://v4q2sby-anonymous-8081.exp.direct`
+
+[Open the QR image at full size](https://github.com/DEKFEP/FixCan-Project/blob/master/docs/fixcan-mobile-qr.png)
+
+> This QR points to a temporary ngrok tunnel. If it has expired, run `FixCan-Mobile-QR.sh` (Linux/macOS) or `FixCan-Mobile-QR.bat` (Windows) and scan the fresh QR it opens. To refresh the committed image while the dev server is running:
+>
+> ```bash
+> node scripts/mobile-qr.mjs tunnel 8081 docs/fixcan-mobile-qr.png
+> ```
+
 ## Stack
 
 - Expo SDK 58 + React Native 0.88 + TypeScript (strict)
