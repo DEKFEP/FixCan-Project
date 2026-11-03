@@ -29,7 +29,13 @@ The script asks for a connection mode:
 1. **LAN** — phone and PC on the same Wi-Fi (fastest, recommended for the demo).
 2. **Tunnel** — different networks; the first run asks to install `@expo/ngrok`.
 
-On macOS/Linux the same thing is just `npx expo start` (add `--tunnel` when the phone is on another network).
+On macOS/Linux the same thing is the **`FixCan-Mobile-QR.sh`** script:
+
+```bash
+./FixCan-Mobile-QR.sh
+```
+
+Or just run `npx expo start` (add `--tunnel` when the phone is on another network).
 
 Useful checks:
 
