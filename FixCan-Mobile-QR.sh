@@ -49,10 +49,10 @@ echo
 case "$option" in
   2)
     echo "  Iniciando Expo en modo Tunnel..."
-    echo "  La primera vez Expo pedira instalar @expo/ngrok. Acepta."
+    echo "  Usa ngrok anonimo: no necesita cuenta de Expo."
     echo "  Escanea el QR que aparece abajo con Expo Go."
     echo
-    npx expo start --tunnel
+    npx expo start --tunnel ngrok
     ;;
   *)
     echo "  Iniciando Expo en modo LAN..."

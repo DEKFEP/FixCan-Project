@@ -27,7 +27,7 @@ Double-click **`FixCan-Mobile-QR.bat`**. It checks Node.js, installs dependencie
 The script asks for a connection mode:
 
 1. **LAN** — phone and PC on the same Wi-Fi (fastest, recommended for the demo).
-2. **Tunnel** — different networks; the first run asks to install `@expo/ngrok`.
+2. **Tunnel** — different networks; uses anonymous ngrok, no Expo account needed.
 
 On macOS/Linux the same thing is the **`FixCan-Mobile-QR.sh`** script:
 

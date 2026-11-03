@@ -63,10 +63,10 @@ goto finish
 :tunnel
 echo.
 echo  Iniciando Expo en modo Tunnel...
-echo  La primera vez Expo pedira instalar @expo/ngrok. Acepta.
+echo  Usa ngrok anonimo: no necesita cuenta de Expo.
 echo  Escanea el QR que aparece abajo con Expo Go.
 echo.
-call npx expo start --tunnel
+call npx expo start --tunnel ngrok
 goto finish
 
 :finish
