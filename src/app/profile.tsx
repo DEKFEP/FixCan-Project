@@ -1,4 +1,5 @@
 import { Feather } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -203,7 +204,10 @@ export default function ProfileScreen() {
       <View style={styles.section}>
         <SectionHeader title={t('profile.about')} />
         <Card padded={false}>
-          <InfoRow label={t('profile.version')} value="1.0.0" />
+          <InfoRow
+            label={t('profile.version')}
+            value={Constants.expoConfig?.version ?? '1.1.0'}
+          />
           <Divider />
           <InfoRow label={t('profile.build')} value="Meta Hackathon 2026" />
           <Divider />
